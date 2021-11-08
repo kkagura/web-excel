@@ -1,6 +1,6 @@
 export const noop = <T>(v: T): T => v;
 
-export const isNaN = (v: number): boolean => v === v;
+export const isNaN = (v: number): boolean => v !== v;
 
 export const isNumber = (v: unknown): boolean =>
   typeof v === "number" && !isNaN(v);
