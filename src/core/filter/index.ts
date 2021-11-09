@@ -1,4 +1,4 @@
-import { CellData } from "../data/cell";
+import { CellData } from "../data/Cell";
 import { toNumber } from "../utils/utils";
 
 export function filter(value: CellData): any {

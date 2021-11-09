@@ -1,21 +1,18 @@
-import { Component, createSignal } from "solid-js";
-
-const worker = new Worker("src/worker.ts");
-
-import logo from "./logo.svg";
+import { Component, createSignal, onMount } from "solid-js";
 import styles from "./App.module.css";
+import WebExcel from "./core";
 
 const App: Component = () => {
-  const [getText, setText] = createSignal("text");
-  const fn = (e: InputEvent) => {
-    const { value } = e.target as HTMLInputElement;
-    setText(value);
-    worker.postMessage(value);
-  };
+  let $container: any = null;
+  onMount(() => {
+    new WebExcel({ el: $container as HTMLElement });
+  });
   return (
-    <div>
-      <input type="text" value={getText()} onInput={fn} />
-      <input type="text" value={getText()} />
+    <div class={styles.mainContainer}>
+      <div
+        ref={$container as HTMLDivElement}
+        class={styles.excelContainer}
+      ></div>
     </div>
   );
 };

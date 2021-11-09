@@ -1,11 +1,6 @@
-import { CellData } from "./cell";
+import { style } from "../conf/default";
+import { CellMap } from "./CellMap";
 
-export interface ColumnData {
-  index: string;
-  data: {
-    [key: string]: CellData;
-  };
-  width: number;
-  selected: false;
-  fixed: boolean;
+export class Column extends CellMap {
+  width: number = style.colWidth;
 }

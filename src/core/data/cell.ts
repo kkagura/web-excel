@@ -1,5 +1,5 @@
 import { filter } from "../filter";
-import { noop } from "../utils/utils";
+import { EventEmitter } from "./EventEmitter";
 
 type ContentTypes = "string" | "number" | "checkbox";
 
@@ -38,14 +38,21 @@ export interface CellData {
   raw: string | boolean;
 }
 
-export class Cell {
+export class Cell extends EventEmitter {
   data: CellData = {
     status: "none",
     type: "string",
     value: "",
     raw: "",
   };
+  colIdx: string = "";
+  rowIdx: string = "";
   updated: boolean = true;
+  constructor(rowIdx: string, colIdx: string) {
+    super();
+    this.rowIdx = rowIdx;
+    this.colIdx = colIdx;
+  }
   setValue(value: string) {
     if (this.data.raw === value) {
       return;

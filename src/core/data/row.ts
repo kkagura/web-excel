@@ -1,11 +1,6 @@
-import { CellData } from "./cell";
+import { style } from "../conf/default";
+import { CellMap } from "./CellMap";
 
-export interface RowData {
-  index: string;
-  data: {
-    [key: string]: CellData;
-  };
-  fixed: boolean;
-  height: number;
-  selected: boolean;
+export class Row extends CellMap {
+  height: number = style.rowHeight;
 }

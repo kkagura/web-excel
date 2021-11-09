@@ -1,4 +1,4 @@
-export const config = {
+export const style = {
   rowHeight: 50,
   colWidth: 50,
   borderWidth: 1,

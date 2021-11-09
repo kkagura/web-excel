@@ -61,4 +61,8 @@ export class EventEmitter {
     this.on(type, wrappedListener);
     return this;
   }
+
+  clear(): this {
+    return this.off();
+  }
 }
