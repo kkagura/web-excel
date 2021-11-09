@@ -1,6 +1,7 @@
+import event from "./conf/event";
 import { EventEmitter } from "./data/EventEmitter";
 import { Sheet } from "./data/Sheet";
-import { Rect } from "./render/Render";
+import { Rect, renderAll } from "./render/Render";
 import { attr } from "./utils/dom";
 
 interface Options {
@@ -11,8 +12,8 @@ interface Options {
 }
 
 export default class WebExcel extends EventEmitter {
-  sheets: Sheet[] = [];
-  currentSheet?: Sheet = undefined;
+  sheets: Map<string, Sheet> = new Map();
+  currentSheet?: Sheet;
   updateQueue: Set<string> = new Set();
   viewRect: Rect = {
     x: 0,
@@ -28,9 +29,16 @@ export default class WebExcel extends EventEmitter {
   constructor(opts: Options) {
     super();
     this.$container = opts.el;
+    this.bindEvents();
+    this.init();
+  }
+
+  bindEvents() {
+    this.on(event.RENDER, this.render);
   }
 
   init() {
+    this.createEmptySheet();
     this.adjustBounds();
     this.$container.appendChild(this.$canvas);
   }
@@ -42,16 +50,41 @@ export default class WebExcel extends EventEmitter {
     attr(canvas, "height", `${height}`);
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
+    this.viewRect.width = width;
+    this.viewRect.height = height;
+    this.emit(event.RENDER, true);
   }
 
   createEmptySheet() {
     const sheet = new Sheet();
     sheet.initData();
-    this.sheets.push(sheet);
+    this.sheets.set(sheet.name, sheet);
+    if (!this.currentSheet) {
+      this.setCurrentSheet(sheet.name);
+    }
+  }
+
+  setCurrentSheet(name: string) {
+    if (this.currentSheet?.name === name) {
+      return;
+    }
+    const sheet = this.sheets.get(name);
+    if (!sheet) {
+      return;
+    }
+    this.currentSheet = sheet;
+    this.emit(event.RENDER, true);
   }
 
   render(repaintAll: boolean) {
+    const sheet = this.currentSheet;
+    if (!sheet) {
+      return;
+    }
+    const ctx = this.$canvas.getContext("2d");
     if (repaintAll) {
+      const { cols, rows } = sheet;
+      renderAll(ctx as CanvasRenderingContext2D, this.viewRect, cols, rows);
     }
   }
 }
