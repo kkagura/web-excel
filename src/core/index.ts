@@ -1,7 +1,7 @@
 import event from "./conf/event";
 import { EventEmitter } from "./data/EventEmitter";
 import { Sheet } from "./data/Sheet";
-import { Rect, renderAll } from "./render/Render";
+import { Rect } from "./render/Renderer";
 import { attr } from "./utils/dom";
 
 interface Options {
@@ -77,14 +77,14 @@ export default class WebExcel extends EventEmitter {
   }
 
   render(repaintAll: boolean) {
-    const sheet = this.currentSheet;
-    if (!sheet) {
-      return;
-    }
-    const ctx = this.$canvas.getContext("2d");
-    if (repaintAll) {
-      const { cols, rows } = sheet;
-      renderAll(ctx as CanvasRenderingContext2D, this.viewRect, cols, rows);
-    }
+    // const sheet = this.currentSheet;
+    // if (!sheet) {
+    //   return;
+    // }
+    // const ctx = this.$canvas.getContext("2d");
+    // if (repaintAll) {
+    //   const { cols, rows } = sheet;
+    //   renderAll(ctx as CanvasRenderingContext2D, this.viewRect, cols, rows);
+    // }
   }
 }

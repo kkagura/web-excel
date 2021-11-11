@@ -12,3 +12,25 @@ export const toNumber = (v: any, fix?: number): number => {
   }
   return isNaN(num) ? 0 : num;
 };
+
+export const isArrayIdx = (i: any): boolean => {
+  if (typeof i === "string") {
+    i = parseFloat(i);
+  }
+  if (typeof i === "number") {
+    return !isNaN(i) && parseInt(i + "") === i;
+  }
+  return false;
+};
+
+export const createCacheFn = <T, M>(fn: (k: T) => M) => {
+  const cache: Map<T, M> = new Map();
+  return (k: T) => {
+    if (cache.has(k)) {
+      return cache.get(k) as M;
+    }
+    const v = fn(k);
+    cache.set(k, v);
+    return v;
+  };
+};
