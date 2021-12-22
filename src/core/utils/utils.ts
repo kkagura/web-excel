@@ -34,3 +34,7 @@ export const createCacheFn = <T, M>(fn: (k: T) => M) => {
     return v;
   };
 };
+
+export function getCellValue(raw: any): string {
+  return String(raw);
+}

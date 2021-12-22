@@ -8,4 +8,11 @@ export const style = {
   fontWeight: "normal",
   textDecoration: "none",
   fontFamily: "",
+  header: {
+    fontSize: 12,
+    backgroundColor: "#ddd",
+    color: "#000",
+    width: 30,
+    height: 30,
+  },
 };

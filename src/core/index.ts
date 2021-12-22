@@ -1,90 +1,41 @@
-import event from "./conf/event";
-import { EventEmitter } from "./data/EventEmitter";
-import { Sheet } from "./data/Sheet";
-import { Rect } from "./render/Renderer";
+import { initData } from "./data/init";
+import { run } from "./render/Renderer";
+import { getCellRect, getCurrentSheet, state } from "./store";
 import { attr } from "./utils/dom";
 
-interface Options {
-  el: HTMLElement;
-  tools?: any[];
-  plugins?: any[];
-  useWorker?: false;
+export function init(canvas: HTMLCanvasElement) {
+  const ctx = canvas.getContext("2d");
+  ctx && run(ctx);
+  const { width, height } = (
+    canvas.parentElement as HTMLElement
+  ).getBoundingClientRect();
+  attr(canvas, "width", width + "");
+  attr(canvas, "height", height + "");
+  state.viewRect.width = width;
+  state.viewRect.height = height;
+  initData();
 }
 
-export default class WebExcel extends EventEmitter {
-  sheets: Map<string, Sheet> = new Map();
-  currentSheet?: Sheet;
-  updateQueue: Set<string> = new Set();
-  viewRect: Rect = {
-    x: 0,
-    y: 0,
-    height: 0,
-    width: 0,
-  };
-  $container: HTMLElement;
-  // $toolbar: HTMLElement = document.createElement("div");
-  // $formulaBar: HTMLElement = document.createElement("div");
-  $canvas: HTMLCanvasElement = document.createElement("canvas");
-
-  constructor(opts: Options) {
-    super();
-    this.$container = opts.el;
-    this.bindEvents();
-    this.init();
-  }
-
-  bindEvents() {
-    this.on(event.RENDER, this.render);
-  }
-
-  init() {
-    this.createEmptySheet();
-    this.adjustBounds();
-    this.$container.appendChild(this.$canvas);
-  }
-
-  adjustBounds() {
-    const { width, height } = this.$container.getBoundingClientRect();
-    const canvas = this.$canvas;
-    attr(canvas, "width", `${width}`);
-    attr(canvas, "height", `${height}`);
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-    this.viewRect.width = width;
-    this.viewRect.height = height;
-    this.emit(event.RENDER, true);
-  }
-
-  createEmptySheet() {
-    const sheet = new Sheet();
-    sheet.initData();
-    this.sheets.set(sheet.name, sheet);
-    if (!this.currentSheet) {
-      this.setCurrentSheet(sheet.name);
+export function getCellIndexAt(point: { x: number; y: number }) {
+  let colIdx: number = -1,
+    rowIdx: number = -1;
+  const { rows, cols, rowCount, colCount } = getCurrentSheet();
+  for (let i = 0; i < rowCount; i++) {
+    const row = rows[i];
+    if (point.y >= row.top && point.y < row.top + row.height) {
+      rowIdx = i;
+      break;
     }
   }
-
-  setCurrentSheet(name: string) {
-    if (this.currentSheet?.name === name) {
-      return;
+  for (let i = 0; i < colCount; i++) {
+    const col = cols[i];
+    if (point.x >= col.left && point.x < col.left + col.width) {
+      colIdx = i;
+      break;
     }
-    const sheet = this.sheets.get(name);
-    if (!sheet) {
-      return;
-    }
-    this.currentSheet = sheet;
-    this.emit(event.RENDER, true);
   }
-
-  render(repaintAll: boolean) {
-    // const sheet = this.currentSheet;
-    // if (!sheet) {
-    //   return;
-    // }
-    // const ctx = this.$canvas.getContext("2d");
-    // if (repaintAll) {
-    //   const { cols, rows } = sheet;
-    //   renderAll(ctx as CanvasRenderingContext2D, this.viewRect, cols, rows);
-    // }
+  if (colIdx < 0 || rowIdx < 0) {
+    return null;
   }
+  return { colIdx, rowIdx };
 }
