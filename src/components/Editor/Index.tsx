@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, onMount } from "solid-js";
 import { CellCoordinate, updateCellValue } from "../../core/store";
 import { Rect } from "../../core/utils/draw";
 import styles from "./index.module.less";
@@ -16,6 +16,7 @@ interface Props {
 }
 
 const Editor: Component<Props> = (props) => {
+  let $editor: any = null;
   const { editorPosition, editorValue, updated, coord } = props;
   const style = {
     left: (editorPosition.x || 0) + "px",
@@ -23,17 +24,23 @@ const Editor: Component<Props> = (props) => {
     width: (editorPosition.width || 50) + "px",
     height: (editorPosition.height || 50) + "px",
   };
+  onMount(() => {
+    console.log("editor mounted");
+    $editor.focus();
+  });
   return (
-    <div
-      onBlur={(e) => {
-        onBlur(e, coord);
-        updated();
-      }}
-      style={style}
-      contentEditable
-      class={styles.editorWrap}
-    >
-      {editorValue}
+    <div class={styles.editorWrap} style={style}>
+      <div
+        onBlur={(e) => {
+          onBlur(e, coord);
+          updated();
+        }}
+        class={styles.editor}
+        ref={$editor as HTMLInputElement}
+        contentEditable
+      >
+        {editorValue}
+      </div>
     </div>
   );
 };

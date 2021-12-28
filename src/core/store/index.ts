@@ -1,7 +1,9 @@
 import { style } from "../conf/default";
-import { pushCell, pushCols, pushRows } from "../render/Renderer";
+import { pushCell } from "../render/Cell";
+import { pushCols, pushRows } from "../render/Sheet";
 import { Rect } from "../utils/draw";
 import { createCacheFn, toNumber, getCellValue } from "../utils/utils";
+import { Ranger } from "./ranger";
 
 export const COL_START = "A".charCodeAt(0);
 export const COL_END = "Z".charCodeAt(0);
@@ -55,13 +57,15 @@ export interface Sheet {
   rows: RowData[];
   rowCount: number;
   colCount: number;
+  scale: number;
+  ranges: Ranger[];
+  selected?: [[string, string], [string, string]];
 }
 
 interface State {
   name: string;
   currIdx: number;
   sheets: Sheet[];
-  selected?: [[string, string], [string, string]];
   viewRect: Rect;
 }
 
@@ -76,6 +80,8 @@ export const state: State = {
       rows: [],
       rowCount: 0,
       colCount: 0,
+      scale: 1,
+      ranges: [],
     },
   ],
   viewRect: {

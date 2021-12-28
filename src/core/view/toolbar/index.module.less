@@ -1,0 +1,20 @@
+.toolbar {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+  .toolGroup {
+    .toolItem {
+      margin: 0 5px;
+      height: 28px;
+      min-width: 28px;
+      cursor: pointer;
+      &:hover {
+        background-color: red;
+      }
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+}
