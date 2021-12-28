@@ -19,7 +19,7 @@ export function render() {
   renderCells();
 }
 
-export function pushCell(cell: CellData, colIdx: number, rowIdx: number) {
+export function pushCell(cell: CellData, rowIdx: number, colIdx: number) {
   cellQueue.add({
     cell,
     colIdx,
@@ -36,8 +36,6 @@ function renderCells() {
     clearRect(ctx, rect);
     const { value } = cell;
     fillText(ctx, value, {}, rect);
-    ctx.fillStyle = getRandomColor();
-    fillRect(ctx, rect);
     ctx.restore();
   });
 }

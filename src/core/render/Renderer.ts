@@ -33,7 +33,7 @@ function render(ctx: CanvasRenderingContext2D) {
     return;
   }
   diffRect();
-  // clearRect(ctx, rect);
+  clearRect(ctx, rect);
   renderSheet();
   renderCells();
   compose(ctx);

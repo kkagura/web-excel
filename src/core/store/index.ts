@@ -130,6 +130,7 @@ export function addRow(i: number, withCell: boolean = true) {
     const cells = new Array(sheet.colCount).fill(null).map(() => createCell(i));
     sheet.cells.splice(i, 0, cells);
   }
+  
   const updateRows = sheet.rows.slice(i);
   updateRows.forEach((updateRow, i) => {
     if (i === 0) {
@@ -234,5 +235,5 @@ export function getCell(coord: CellCoordinate) {
 export function updateCellValue(coord: CellCoordinate, value: string) {
   const cell = getCell(coord);
   cell.value = value;
-  pushCell(cell, coord.colIdx, coord.rowIdx);
+  pushCell(cell, coord.rowIdx, coord.colIdx);
 }
