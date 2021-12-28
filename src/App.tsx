@@ -7,19 +7,7 @@ import { getCell, getCellRect } from "./core/store";
 import Toolbar from "./core/view/toolbar";
 import { onDbClick, onClick, onMousedown, onMouseup } from "./core/events";
 import "./core/operator";
-
-const [editorPosition, setEditorPosition] = createSignal<Rect>({
-  x: 0,
-  y: 0,
-  width: 50,
-  height: 50,
-});
-
-const [editorValue, setEditorValue] = createSignal<string>("zsda");
-
-const [showEditor, setShowEditor] = createSignal(false);
-
-const [coord, setCoord] = createSignal({ colIdx: -1, rowIdx: -1 });
+import { appState } from "./core/store/app";
 
 config({
   tools: [["backgroundColor"]],
@@ -47,17 +35,14 @@ const App: Component = () => {
       >
         <canvas className="canvas" ref={$canvas as HTMLCanvasElement}></canvas>
       </div>
-      {showEditor() ? (
-        <Editor
-          editorValue={editorValue()}
-          editorPosition={editorPosition()}
-          updated={updated}
-          coord={coord()}
-        ></Editor>
-      ) : null}
+      {appState.cellEditor.show ? <Editor /> : null}
     </div>
   );
 };
+
+export function getContainerBounding() {
+  return getCanvas().getBoundingClientRect();
+}
 
 // function onDbClick(e: MouseEvent) {
 //   const res = getCellIndexAt({
@@ -74,9 +59,5 @@ const App: Component = () => {
 //   setEditorValue(cell.value);
 //   setShowEditor(true);
 // }
-
-function updated() {
-  setShowEditor(false);
-}
 
 export default App;

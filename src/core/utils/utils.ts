@@ -43,18 +43,21 @@ export function getRandomColor() {
   return "#" + (~~(Math.random() * (1 << 24))).toString(16);
 }
 
-export function binarySearch<T>(arr: T[], filter: (item: T) => number): number {
+export function binarySearch<T>(
+  arr: T[],
+  filter: (item: T) => number
+): null | T {
   if (!arr.length) {
-    return -1;
+    return null;
   }
   if (arr.length === 1) {
-    return filter(arr[0]) === 0 ? 0 : -1;
+    return filter(arr[0]) === 0 ? arr[0] : null;
   }
   const half = Math.floor(arr.length / 2);
   const mid = arr[half];
   const res = filter(mid);
   if (res === 0) {
-    return half;
+    return mid;
   }
   if (res < 0) {
     return binarySearch(arr.slice(0, half), filter);

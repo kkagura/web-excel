@@ -6,12 +6,14 @@ import {
   translateNumberToColIdx,
 } from "../store";
 import { fillRect, fillText, line, Rect } from "../utils/draw";
-import { getSheetCanvas, renderGrid } from "./Sheet";
+import { render as renderCells, getCellCanvas } from "./Cell";
+import { getSheetCanvas, render as renderSheet } from "./Sheet";
 
 const cbs: (() => undefined)[] = [];
 
 let timer: number;
 let rect: Rect;
+let updateFlag = false;
 
 export function run(ctx: CanvasRenderingContext2D) {
   const { requestAnimationFrame } = window;
@@ -27,12 +29,17 @@ export function stop() {
 }
 
 function render(ctx: CanvasRenderingContext2D) {
+  if (!updateFlag) {
+    return;
+  }
   diffRect();
   // clearRect(ctx, rect);
-  renderGrid();
+  renderSheet();
+  renderCells();
   compose(ctx);
   flushCallbacks();
   cbs.length = 0;
+  updateFlag = false;
 }
 
 function diffRect() {
@@ -48,6 +55,14 @@ function compose(ctx: CanvasRenderingContext2D) {
     state.viewRect.width,
     state.viewRect.height
   );
+  const cellCanvas = getCellCanvas();
+  ctx.drawImage(
+    cellCanvas,
+    state.viewRect.x,
+    state.viewRect.y,
+    state.viewRect.width,
+    state.viewRect.height
+  );
 }
 
 export function clearRect(ctx: CanvasRenderingContext2D, rect: Rect) {
@@ -57,6 +72,10 @@ export function clearRect(ctx: CanvasRenderingContext2D, rect: Rect) {
 
 export function nextTick(cb: () => undefined) {
   cbs.push(cb);
+}
+
+export function trigger() {
+  updateFlag = true;
 }
 
 function flushCallbacks() {

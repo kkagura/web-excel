@@ -97,7 +97,7 @@ function handleMouseEvent(type: EventType, e: MouseEvent) {
   const offsetx = e.pageX - left;
   const offsety = e.pageY - top;
   const sheet = getCurrentSheet();
-  const rowIdx = binarySearch(sheet.rows, (row) => {
+  const rowData = binarySearch(sheet.rows, (row) => {
     if (row.top >= offsety) {
       return -1;
     }
@@ -106,10 +106,10 @@ function handleMouseEvent(type: EventType, e: MouseEvent) {
     }
     return 0;
   });
-  if (rowIdx < 0) {
+  if (!rowData) {
     return;
   }
-  const colIdx = binarySearch(sheet.cols, (col) => {
+  const colData = binarySearch(sheet.cols, (col) => {
     if (col.left >= offsetx) {
       return -1;
     }
@@ -118,14 +118,14 @@ function handleMouseEvent(type: EventType, e: MouseEvent) {
     }
     return 0;
   });
-  if (colIdx < 0) {
+  if (!colData) {
     return;
   }
-  const cell = getCell({ colIdx, rowIdx });
+  const cell = getCell({ colIdx: colData.i, rowIdx: rowData.i });
   const event = {
     cell,
-    row: sheet.rows[rowIdx],
-    col: sheet.cols[colIdx],
+    row: rowData,
+    col: colData,
     raw: e,
     stop: false,
   };

@@ -1,9 +1,15 @@
 import { style } from "../conf/default";
-import { ColData, getCellsByRowIdx, RowData, state, translateNumberToColIdx } from "../store";
+import {
+  ColData,
+  getCellsByRowIdx,
+  RowData,
+  state,
+  translateNumberToColIdx,
+} from "../store";
 import { fillRect, fillText, line } from "../utils/draw";
 import { getRandomColor } from "../utils/utils";
 import { pushCell } from "./Cell";
-import { clearRect } from "./Renderer";
+import { clearRect, trigger } from "./Renderer";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -11,20 +17,15 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 const rowQueue: Set<RowData> = new Set();
 const colQueue: Set<ColData> = new Set();
 
-let updateFlag = false;
-
-export function renderGrid() {
-  if (updateFlag) {
-    canvas.width = state.viewRect.width;
-    canvas.height = state.viewRect.height;
-    clearRect(ctx, state.viewRect);
-    rowQueue.forEach((row) => renderRow(row));
-    colQueue.forEach((col) => renderCol(col));
-    updateFlag = false;
-  }
+export function render() {
+  canvas.width = state.viewRect.width;
+  canvas.height = state.viewRect.height;
+  clearRect(ctx, state.viewRect);
+  rowQueue.forEach((row) => renderRow(row));
+  colQueue.forEach((col) => renderCol(col));
 }
 
-export function renderCol(col: ColData) {
+function renderCol(col: ColData) {
   const rect = state.viewRect;
   const starty = rect.y;
   const headerRect = {
@@ -50,7 +51,7 @@ export function renderCol(col: ColData) {
   ]);
 }
 
-export function renderRow(row: RowData) {
+function renderRow(row: RowData) {
   const rect = state.viewRect;
 
   const startx = rect.x;
@@ -81,7 +82,6 @@ export function getSheetCanvas() {
   return canvas;
 }
 
-
 export function pushRow(row: RowData) {
   rowQueue.add(row);
   const i = row.i;
@@ -89,7 +89,7 @@ export function pushRow(row: RowData) {
   cells.forEach((c, colIdx) => {
     pushCell(c, i, colIdx);
   });
-  updateFlag = true;
+  trigger();
 }
 
 export function pushRows(rows: RowData[]) {
@@ -98,7 +98,7 @@ export function pushRows(rows: RowData[]) {
 
 export function pushCol(col: ColData) {
   colQueue.add(col);
-  updateFlag = true;
+  trigger();
 }
 
 export function pushCols(cols: ColData[]) {

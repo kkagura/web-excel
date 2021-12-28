@@ -1,3 +1,4 @@
+import { getCanvas } from "../../App";
 import { style } from "../conf/default";
 import { pushCell } from "../render/Cell";
 import { pushCols, pushRows } from "../render/Sheet";

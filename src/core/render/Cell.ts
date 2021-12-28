@@ -1,8 +1,7 @@
-import { CellData, getCellRect } from "../store";
-import { fillText } from "../utils/draw";
-import { clearRect } from "./Renderer";
-
-let updateFlag = false;
+import { CellData, getCellRect, state } from "../store";
+import { fillRect, fillText } from "../utils/draw";
+import { getRandomColor } from "../utils/utils";
+import { clearRect, trigger } from "./Renderer";
 
 const cellQueue: Set<{
   rowIdx: number;
@@ -10,16 +9,26 @@ const cellQueue: Set<{
   cell: CellData;
 }> = new Set();
 
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+export function render() {
+  canvas.width = state.viewRect.width;
+  canvas.height = state.viewRect.height;
+  clearRect(ctx, state.viewRect);
+  renderCells();
+}
+
 export function pushCell(cell: CellData, colIdx: number, rowIdx: number) {
   cellQueue.add({
     cell,
     colIdx,
     rowIdx,
   });
-  updateFlag = true;
+  trigger();
 }
 
-export function renderCells(ctx: CanvasRenderingContext2D) {
+function renderCells() {
   cellQueue.forEach((conf) => {
     ctx.save();
     const { cell, colIdx, rowIdx } = conf;
@@ -27,6 +36,12 @@ export function renderCells(ctx: CanvasRenderingContext2D) {
     clearRect(ctx, rect);
     const { value } = cell;
     fillText(ctx, value, {}, rect);
+    ctx.fillStyle = getRandomColor();
+    fillRect(ctx, rect);
     ctx.restore();
   });
+}
+
+export function getCellCanvas() {
+  return canvas;
 }
