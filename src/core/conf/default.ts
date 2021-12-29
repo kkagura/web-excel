@@ -15,4 +15,8 @@ export const style = {
     width: 30,
     height: 30,
   },
+  selector: {
+    borderWidth: 2,
+    borderColor: "green",
+  },
 };

@@ -1,6 +1,7 @@
 import { getCanvas } from "../../App";
 import { style } from "../conf/default";
 import { pushCell } from "../render/Cell";
+import { trigger } from "../render/Renderer";
 import { pushCols, pushRows } from "../render/Sheet";
 import { Rect } from "../utils/draw";
 import { createCacheFn, toNumber, getCellValue } from "../utils/utils";
@@ -59,7 +60,7 @@ export interface Sheet {
   colCount: number;
   scale: number;
   ranges: Ranger[];
-  selected?: [[string, string], [string, string]];
+  selector?: Ranger;
 }
 
 interface State {
@@ -235,4 +236,10 @@ export function updateCellValue(coord: Coord, value: string) {
   const cell = getCell(coord);
   cell.value = value;
   pushCell(cell, coord[0], coord[1]);
+}
+
+export function setSelector(selector: Ranger) {
+  const sheet = getCurrentSheet();
+  sheet.selector = selector;
+  trigger();
 }

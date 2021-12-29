@@ -1,5 +1,12 @@
 import { getCanvas } from "../../App";
-import { CellData, ColData, getCell, getCurrentSheet, RowData } from "../store";
+import {
+  CellData,
+  ColData,
+  Coord,
+  getCell,
+  getCurrentSheet,
+  RowData,
+} from "../store";
 import { binarySearch } from "../utils/utils";
 
 export type CMouseEvent = {
@@ -92,36 +99,14 @@ export function onDbClick(e: MouseEvent) {
 }
 
 function handleMouseEvent(type: EventType, e: MouseEvent) {
-  const canvas = getCanvas();
-  const { left, top } = canvas.getBoundingClientRect();
-  const offsetx = e.pageX - left;
-  const offsety = e.pageY - top;
+  const coord = getCellCoordAt(e);
+  if (!coord) {
+    return;
+  }
   const sheet = getCurrentSheet();
-  const rowData = binarySearch(sheet.rows, (row) => {
-    if (row.top >= offsety) {
-      return -1;
-    }
-    if (row.top + row.height < offsety) {
-      return 1;
-    }
-    return 0;
-  });
-  if (!rowData) {
-    return;
-  }
-  const colData = binarySearch(sheet.cols, (col) => {
-    if (col.left >= offsetx) {
-      return -1;
-    }
-    if (col.left + col.width < offsetx) {
-      return 1;
-    }
-    return 0;
-  });
-  if (!colData) {
-    return;
-  }
-  const cell = getCell([rowData.i, colData.i]);
+  const rowData = sheet.rows[coord[0]];
+  const colData = sheet.cols[coord[1]];
+  const cell = getCell(coord);
   const event = {
     cell,
     row: rowData,
@@ -138,4 +123,37 @@ function handleMouseEvent(type: EventType, e: MouseEvent) {
   colMap.get(type)?.forEach((listener) => {
     listener(event);
   });
+}
+
+export function getCellCoordAt(e: MouseEvent): Coord | null {
+  const canvas = getCanvas();
+  const { left, top } = canvas.getBoundingClientRect();
+  const offsetx = e.pageX - left;
+  const offsety = e.pageY - top;
+  const sheet = getCurrentSheet();
+  const rowData = binarySearch(sheet.rows, (row) => {
+    if (row.top >= offsety) {
+      return -1;
+    }
+    if (row.top + row.height < offsety) {
+      return 1;
+    }
+    return 0;
+  });
+  if (!rowData) {
+    return null;
+  }
+  const colData = binarySearch(sheet.cols, (col) => {
+    if (col.left >= offsetx) {
+      return -1;
+    }
+    if (col.left + col.width < offsetx) {
+      return 1;
+    }
+    return 0;
+  });
+  if (!colData) {
+    return null;
+  }
+  return [rowData.i, colData.i];
 }

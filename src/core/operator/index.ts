@@ -1,6 +1,7 @@
 import { addCellEventListener } from "../events";
-import { getCellRect } from "../store";
+import { getCellRect, setSelector } from "../store";
 import { setAppState } from "../store/app";
+import { Ranger } from "../store/ranger";
 
 addCellEventListener("dbClick", (e) => {
   const {
@@ -16,4 +17,16 @@ addCellEventListener("dbClick", (e) => {
       value: e.cell.value,
     };
   });
+});
+
+addCellEventListener("mousedown", (e) => {
+  const {
+    row: { i: rowIdx },
+    col: { i: colIdx },
+  } = e;
+  const selector: Ranger = [
+    [rowIdx, colIdx],
+    [rowIdx, colIdx],
+  ];
+  setSelector(selector);
 });

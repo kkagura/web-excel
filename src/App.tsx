@@ -1,6 +1,6 @@
 import { Component, createSignal, onMount } from "solid-js";
 import styles from "./App.module.less";
-import { config, getCellIndexAt, init } from "./core";
+import { config, init } from "./core";
 import Editor from "./components/Editor/Index";
 import { Rect } from "./core/utils/draw";
 import { getCell, getCellRect } from "./core/store";
