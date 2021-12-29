@@ -9,10 +9,9 @@ import { Ranger } from "./ranger";
 export const COL_START = "A".charCodeAt(0);
 export const COL_END = "Z".charCodeAt(0);
 
-export interface CellCoordinate {
-  colIdx: number;
-  rowIdx: number;
-}
+export type Coord = [RowIdx, ColIdx];
+export type RowIdx = number;
+export type ColIdx = number;
 
 interface BorderStyle {
   top?: Border;
@@ -38,14 +37,14 @@ export interface CellData {
 }
 
 export interface ColData {
-  i: number;
+  i: ColIdx;
   left: number;
   width: number;
   fixed: boolean;
 }
 
 export interface RowData {
-  i: number;
+  i: RowIdx;
   top: number;
   height: number;
   fixed: boolean;
@@ -130,7 +129,7 @@ export function addRow(i: number, withCell: boolean = true) {
     const cells = new Array(sheet.colCount).fill(null).map(() => createCell(i));
     sheet.cells.splice(i, 0, cells);
   }
-  
+
   const updateRows = sheet.rows.slice(i);
   updateRows.forEach((updateRow, i) => {
     if (i === 0) {
@@ -203,20 +202,20 @@ function accumWidth(cols: ColData[]) {
   return w;
 }
 
-function getRow(rowIndex: number) {
+function getRow(rowIndex: RowIdx) {
   const s = getCurrentSheet();
   const { rows } = s;
   return rows[rowIndex];
 }
 
-function getCol(colIndex: number) {
+function getCol(colIndex: ColIdx) {
   const s = getCurrentSheet();
   const { cols } = s;
   return cols[colIndex];
 }
 
-export function getCellRect(coord: CellCoordinate): Rect {
-  const { colIdx, rowIdx } = coord;
+export function getCellRect(coord: Coord): Rect {
+  const [colIdx, rowIdx] = coord;
   const row = getRow(rowIdx);
   const col = getCol(colIdx);
   return {
@@ -227,13 +226,13 @@ export function getCellRect(coord: CellCoordinate): Rect {
   };
 }
 
-export function getCell(coord: CellCoordinate) {
-  const { colIdx, rowIdx } = coord;
+export function getCell(coord: Coord) {
+  const [rowIdx, colIdx] = coord;
   return getCurrentSheet().cells[rowIdx][colIdx];
 }
 
-export function updateCellValue(coord: CellCoordinate, value: string) {
+export function updateCellValue(coord: Coord, value: string) {
   const cell = getCell(coord);
   cell.value = value;
-  pushCell(cell, coord.rowIdx, coord.colIdx);
+  pushCell(cell, coord[0], coord[1]);
 }

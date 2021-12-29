@@ -1,3 +1,5 @@
+import { Rect } from "./draw";
+
 export const noop = <T>(v: T): T => v;
 
 export const isNaN = (v: number): boolean => v !== v;
@@ -63,4 +65,12 @@ export function binarySearch<T>(
     return binarySearch(arr.slice(0, half), filter);
   }
   return binarySearch(arr.slice(half), filter);
+}
+
+export function intersect(rect1: Rect, rect2: Rect) {
+  const minx = Math.max(rect1.x, rect2.x);
+  const miny = Math.max(rect1.y, rect1.y);
+  const maxx = Math.min(rect1.x + rect1.width, rect2.x + rect2.width);
+  const maxy = Math.min(rect1.y + rect1.height, rect2.y + rect2.height);
+  return minx <= maxx && miny <= maxy;
 }

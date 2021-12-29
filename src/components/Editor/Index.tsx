@@ -1,11 +1,11 @@
 import { Component, createSignal, onMount } from "solid-js";
 import { getContainerBounding } from "../../App";
-import { CellCoordinate, updateCellValue } from "../../core/store";
+import { Coord, updateCellValue } from "../../core/store";
 import { appState, setAppState } from "../../core/store/app";
 import { Rect } from "../../core/utils/draw";
 import styles from "./index.module.less";
 
-function onBlur(e: FocusEvent, coord: CellCoordinate) {
+function onBlur(e: FocusEvent, coord: Coord) {
   const value = (e.target as HTMLElement).innerText;
   updateCellValue(coord, value);
 }

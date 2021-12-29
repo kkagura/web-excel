@@ -121,7 +121,7 @@ function handleMouseEvent(type: EventType, e: MouseEvent) {
   if (!colData) {
     return;
   }
-  const cell = getCell({ colIdx: colData.i, rowIdx: rowData.i });
+  const cell = getCell([rowData.i, colData.i]);
   const event = {
     cell,
     row: rowData,

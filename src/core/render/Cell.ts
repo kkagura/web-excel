@@ -32,7 +32,7 @@ function renderCells() {
   cellQueue.forEach((conf) => {
     ctx.save();
     const { cell, colIdx, rowIdx } = conf;
-    const rect = getCellRect({ colIdx, rowIdx });
+    const rect = getCellRect([rowIdx, colIdx]);
     clearRect(ctx, rect);
     const { value } = cell;
     fillText(ctx, value, {}, rect);
