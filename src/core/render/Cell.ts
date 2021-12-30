@@ -1,4 +1,5 @@
-import { CellData, getCellRect, state } from "../store";
+import { getCanvas, getContainerBounding } from "../../App";
+import { CellData, getCellRect, getViewRect, state } from "../store";
 import { fillRect, fillText } from "../utils/draw";
 import { getRandomColor } from "../utils/utils";
 import { clearRect, trigger } from "./Renderer";
@@ -12,10 +13,14 @@ const cellQueue: Set<{
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
+export function resize() {
+  const { width, height } = getContainerBounding();
+  canvas.width = width;
+  canvas.height = height;
+}
+
 export function render() {
-  canvas.width = state.viewRect.width;
-  canvas.height = state.viewRect.height;
-  clearRect(ctx, state.viewRect);
+  clearRect(ctx, getViewRect());
   renderCells();
 }
 

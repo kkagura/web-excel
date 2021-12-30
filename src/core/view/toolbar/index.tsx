@@ -5,7 +5,6 @@ import styles from "./index.module.less";
 
 const Toolbar: Component = () => {
   onMount(() => {
-    console.log(toolState);
   })
   return (
     <div class={styles.toolbar}>

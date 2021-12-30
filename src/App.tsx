@@ -8,12 +8,16 @@ import Toolbar from "./core/view/toolbar";
 import { onDbClick, onClick, onMousedown, onMouseup } from "./core/events";
 import "./core/operator";
 import { appState } from "./core/store/app";
+import { getSheetCanvas } from "./core/render/Sheet";
+import { getCellCanvas } from "./core/render/Cell";
+import { attr } from "./core/utils/dom";
 
 config({
   tools: [["backgroundColor"]],
 });
 
 let $canvas: any = null;
+let $container: any = null;
 
 export function getCanvas() {
   return $canvas as HTMLCanvasElement;
@@ -22,6 +26,7 @@ export function getCanvas() {
 const App: Component = () => {
   onMount(() => {
     init($canvas);
+    resize();
   });
   return (
     <div class={styles.mainContainer}>
@@ -32,6 +37,7 @@ const App: Component = () => {
         onMouseDown={onMousedown}
         onMouseUp={onMouseup}
         class={styles.excelContainer}
+        ref={$container}
       >
         <canvas className="canvas" ref={$canvas as HTMLCanvasElement}></canvas>
       </div>
@@ -41,23 +47,20 @@ const App: Component = () => {
 };
 
 export function getContainerBounding() {
-  return getCanvas().getBoundingClientRect();
+  return $container.getBoundingClientRect();
 }
 
-// function onDbClick(e: MouseEvent) {
-//   const res = getCellIndexAt({
-//     x: e.pageX,
-//     y: e.pageY,
-//   });
-//   if (!res) {
-//     return;
-//   }
-//   const { colIdx, rowIdx } = res;
-//   setCoord(res);
-//   setEditorPosition(getCellRect({ colIdx, rowIdx }));
-//   const cell = getCell({ colIdx, rowIdx });
-//   setEditorValue(cell.value);
-//   setShowEditor(true);
-// }
+function resize() {
+  const { width, height } = getContainerBounding();
+  attr(getCanvas(), "width", width + "");
+  attr(getCanvas(), "height", height + "");
+  attr(getCanvas(), 'style', `width:${width}px;height:${height}px;`);
+  attr(getSheetCanvas(), "width", width + "");
+  attr(getSheetCanvas(), "height", height + "");
+  attr(getSheetCanvas(), 'style', `width:${width}px;height:${height}px;`);
+  attr(getCellCanvas(), "width", width + "");
+  attr(getCellCanvas(), "height", height + "");
+  attr(getCellCanvas(), 'style', `width:${width}px;height:${height}px;`);
+}
 
 export default App;

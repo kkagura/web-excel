@@ -5,7 +5,7 @@ import { trigger } from "../render/Renderer";
 import { pushCols, pushRows } from "../render/Sheet";
 import { Rect } from "../utils/draw";
 import { createCacheFn, toNumber, getCellValue } from "../utils/utils";
-import { Ranger } from "./ranger";
+import { isSameRanger, Ranger } from "./ranger";
 
 export const COL_START = "A".charCodeAt(0);
 export const COL_END = "Z".charCodeAt(0);
@@ -61,13 +61,13 @@ export interface Sheet {
   scale: number;
   ranges: Ranger[];
   selector?: Ranger;
+  viewRect: Rect;
 }
 
 interface State {
   name: string;
   currIdx: number;
   sheets: Sheet[];
-  viewRect: Rect;
 }
 
 export const state: State = {
@@ -83,14 +83,14 @@ export const state: State = {
       colCount: 0,
       scale: 1,
       ranges: [],
+      viewRect: {
+        x: 0,
+        y: 0,
+        width: 500,
+        height: 500,
+      },
     },
   ],
-  viewRect: {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  },
 };
 
 export function getCurrentSheet() {
@@ -216,7 +216,7 @@ function getCol(colIndex: ColIdx) {
 }
 
 export function getCellRect(coord: Coord): Rect {
-  const [colIdx, rowIdx] = coord;
+  const [rowIdx, colIdx] = coord;
   const row = getRow(rowIdx);
   const col = getCol(colIdx);
   return {
@@ -240,6 +240,32 @@ export function updateCellValue(coord: Coord, value: string) {
 
 export function setSelector(selector: Ranger) {
   const sheet = getCurrentSheet();
+  if (sheet.selector && isSameRanger(selector, sheet.selector)) {
+    return;
+  }
   sheet.selector = selector;
   trigger();
+}
+
+export function isSameCoord(coord1: Coord, coord2: Coord) {
+  return coord1[0] === coord2[0] && coord1[1] === coord2[1];
+}
+
+export function setViewRect(rect: Partial<Rect>) {
+  const s = getCurrentSheet();
+  const viewRect = s.viewRect;
+  let changed;
+  (Object.keys(rect) as (keyof Rect)[]).forEach((key) => {
+    if (rect[key] !== viewRect[key]) {
+      changed = true;
+      viewRect[key] = rect[key] as number;
+    }
+  });
+  if (changed) {
+    trigger();
+  }
+}
+
+export function getViewRect() {
+  return getCurrentSheet().viewRect;
 }

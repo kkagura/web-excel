@@ -1,4 +1,4 @@
-import { Coord, getCellRect } from ".";
+import { Coord, getCellRect, isSameCoord } from ".";
 import { Rect } from "../utils/draw";
 
 export type Ranger = [Coord, Coord];
@@ -21,4 +21,8 @@ export function getRangerViewRect(ranger: Ranger): Rect {
     width: end.x - start.x + end.width,
     height: end.y - start.y + end.height,
   };
+}
+
+export function isSameRanger(range1: Ranger, range2: Ranger) {
+  return isSameCoord(range1[0], range2[0]) && isSameCoord(range1[1], range2[1]);
 }

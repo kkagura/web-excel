@@ -10,3 +10,4 @@ export function attr(el: HTMLElement, key: string, value?: string) {
     return el.getAttribute(key);
   }
 }
+

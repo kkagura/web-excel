@@ -1,4 +1,5 @@
-import { addCellEventListener } from "../events";
+import { getCanvas } from "../../App";
+import { addCellEventListener, getCellCoordAt } from "../events";
 import { getCellRect, setSelector } from "../store";
 import { setAppState } from "../store/app";
 import { Ranger } from "../store/ranger";
@@ -29,4 +30,19 @@ addCellEventListener("mousedown", (e) => {
     [rowIdx, colIdx],
   ];
   setSelector(selector);
+  const canvas = getCanvas();
+  const movemove = (e: MouseEvent) => {
+    const coord = getCellCoordAt(e);
+    if (coord) {
+      setSelector([selector[0], coord]);
+    }
+  };
+  const mouveup = () => {
+    canvas.removeEventListener("mousemove", movemove);
+    canvas.removeEventListener("mouseup", mouveup);
+    canvas.removeEventListener("mouseleave", mouveup);
+  };
+  canvas.addEventListener("mousemove", movemove);
+  canvas.addEventListener("mouseup", mouveup);
+  canvas.addEventListener("mouseleave", mouveup);
 });

@@ -3,11 +3,12 @@ import {
   CellData,
   getCellRect,
   getCurrentSheet,
+  getViewRect,
   state,
   translateNumberToColIdx,
 } from "../store";
-import { Ranger } from "../store/ranger";
-import { fillRect, fillText, line, Rect } from "../utils/draw";
+import { getRangerViewRect, Ranger } from "../store/ranger";
+import { fillRect, fillText, line, Rect, strokeRect } from "../utils/draw";
 import { render as renderCells, getCellCanvas } from "./Cell";
 import { getSheetCanvas, render as renderSheet } from "./Sheet";
 
@@ -16,7 +17,6 @@ const cbs: (() => undefined)[] = [];
 let timer: number;
 let rect: Rect;
 let updateFlag = false;
-let oldSelector: Ranger;
 
 export function run(ctx: CanvasRenderingContext2D) {
   const { requestAnimationFrame } = window;
@@ -37,9 +37,10 @@ function render(ctx: CanvasRenderingContext2D) {
   }
   diffRect();
   clear(ctx);
-  renderSheet();
   renderCells();
+  renderSheet();
   compose(ctx);
+  renderSelector(ctx);
   flushCallbacks();
   cbs.length = 0;
   updateFlag = false;
@@ -53,26 +54,14 @@ function clear(ctx: CanvasRenderingContext2D) {
 function clearSelector() {}
 
 function diffRect() {
-  rect = { ...state.viewRect };
+  rect = { ...getViewRect() };
 }
 
 function compose(ctx: CanvasRenderingContext2D) {
   const sheetCanvas = getSheetCanvas();
-  ctx.drawImage(
-    sheetCanvas,
-    state.viewRect.x,
-    state.viewRect.y,
-    state.viewRect.width,
-    state.viewRect.height
-  );
+  ctx.drawImage(sheetCanvas, rect.x, rect.y, rect.width, rect.height);
   const cellCanvas = getCellCanvas();
-  ctx.drawImage(
-    cellCanvas,
-    state.viewRect.x,
-    state.viewRect.y,
-    state.viewRect.width,
-    state.viewRect.height
-  );
+  ctx.drawImage(cellCanvas, rect.x, rect.y, rect.width, rect.height);
 }
 
 function renderSelector(ctx: CanvasRenderingContext2D) {
@@ -80,6 +69,11 @@ function renderSelector(ctx: CanvasRenderingContext2D) {
   if (!s.selector) {
     return;
   }
+  const rect = getRangerViewRect(s.selector);
+  ctx.beginPath();
+  ctx.strokeStyle = style.selector.borderColor;
+  ctx.lineWidth = style.selector.borderWidth;
+  strokeRect(ctx, rect);
 }
 
 export function clearRect(ctx: CanvasRenderingContext2D, rect: Rect) {

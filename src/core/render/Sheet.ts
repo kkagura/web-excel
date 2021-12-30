@@ -1,7 +1,9 @@
+import { getContainerBounding } from "../../App";
 import { style } from "../conf/default";
 import {
   ColData,
   getCellsByRowIdx,
+  getViewRect,
   RowData,
   state,
   translateNumberToColIdx,
@@ -17,16 +19,20 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 const rowQueue: Set<RowData> = new Set();
 const colQueue: Set<ColData> = new Set();
 
+export function resize() {
+  const { width, height } = getContainerBounding();
+  canvas.width = width;
+  canvas.height = height;
+}
+
 export function render() {
-  canvas.width = state.viewRect.width;
-  canvas.height = state.viewRect.height;
-  clearRect(ctx, state.viewRect);
+  clearRect(ctx, getViewRect());
   rowQueue.forEach((row) => renderRow(row));
   colQueue.forEach((col) => renderCol(col));
 }
 
 function renderCol(col: ColData) {
-  const rect = state.viewRect;
+  const rect = getViewRect();
   const starty = rect.y;
   const headerRect = {
     x: col.left,
@@ -52,7 +58,7 @@ function renderCol(col: ColData) {
 }
 
 function renderRow(row: RowData) {
-  const rect = state.viewRect;
+  const rect = getViewRect();
 
   const startx = rect.x;
   //  绘制头部
