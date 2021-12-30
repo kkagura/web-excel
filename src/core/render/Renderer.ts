@@ -17,6 +17,7 @@ const cbs: (() => undefined)[] = [];
 let timer: number;
 let rect: Rect;
 let updateFlag = false;
+let all = false;
 
 export function run(ctx: CanvasRenderingContext2D) {
   const { requestAnimationFrame } = window;
@@ -85,8 +86,9 @@ export function nextTick(cb: () => undefined) {
   cbs.push(cb);
 }
 
-export function trigger() {
+export function trigger(paintAll: boolean = false) {
   updateFlag = true;
+  all = paintAll;
 }
 
 function flushCallbacks() {

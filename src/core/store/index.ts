@@ -62,6 +62,7 @@ export interface Sheet {
   ranges: Ranger[];
   selector?: Ranger;
   viewRect: Rect;
+  bounding: Rect;
 }
 
 interface State {
@@ -88,6 +89,12 @@ export const state: State = {
         y: 0,
         width: 500,
         height: 500,
+      },
+      bounding: {
+        x: style.header.width,
+        y: style.header.height,
+        width: 0,
+        height: 0,
       },
     },
   ],
@@ -126,6 +133,7 @@ export function addRow(i: number, withCell: boolean = true) {
   const row = createRow(i);
   sheet.rows.splice(i, 0, row);
   row.top = accumHeight(sheet.rows.slice(0, i));
+  sheet.bounding.height += row.height;
   if (withCell) {
     const cells = new Array(sheet.colCount).fill(null).map(() => createCell(i));
     sheet.cells.splice(i, 0, cells);
@@ -147,6 +155,7 @@ export function addCol(i: number, withCell: boolean = false) {
   const col = createCol(i);
   sheet.cols.splice(i, 0, col);
   col.left = accumWidth(sheet.cols.slice(0, i));
+  sheet.bounding.width += col.width;
   if (withCell) {
     const { rowCount, cells } = sheet;
     for (let i = 0; i < rowCount; i++) {
