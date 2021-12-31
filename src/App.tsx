@@ -11,6 +11,7 @@ import { appState } from "./core/store/app";
 import { getSheetCanvas } from "./core/render/Sheet";
 import { getCellCanvas } from "./core/render/Cell";
 import { attr } from "./core/utils/dom";
+import ScrollBar from "./components/ScrollBar";
 
 config({
   tools: [["backgroundColor"]],
@@ -40,6 +41,12 @@ const App: Component = () => {
         ref={$container}
       >
         <canvas className="canvas" ref={$canvas as HTMLCanvasElement}></canvas>
+        <ScrollBar
+          $container={$container}
+          min={50}
+          value={0}
+          total={0}
+        ></ScrollBar>
       </div>
       {appState.cellEditor.show ? <Editor /> : null}
     </div>
@@ -54,13 +61,13 @@ function resize() {
   const { width, height } = getContainerBounding();
   attr(getCanvas(), "width", width + "");
   attr(getCanvas(), "height", height + "");
-  attr(getCanvas(), 'style', `width:${width}px;height:${height}px;`);
+  attr(getCanvas(), "style", `width:${width}px;height:${height}px;`);
   attr(getSheetCanvas(), "width", width + "");
   attr(getSheetCanvas(), "height", height + "");
-  attr(getSheetCanvas(), 'style', `width:${width}px;height:${height}px;`);
+  attr(getSheetCanvas(), "style", `width:${width}px;height:${height}px;`);
   attr(getCellCanvas(), "width", width + "");
   attr(getCellCanvas(), "height", height + "");
-  attr(getCellCanvas(), 'style', `width:${width}px;height:${height}px;`);
+  attr(getCellCanvas(), "style", `width:${width}px;height:${height}px;`);
   setViewRect({ width, height });
 }
 

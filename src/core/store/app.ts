@@ -1,10 +1,11 @@
 import { createStore } from "solid-js/store";
+import { Coord } from ".";
 
 const app = {
   cellEditor: {
     show: false,
     value: "",
-    coord: { colIdx: -1, rowIdx: -1 },
+    coord: [-1, -1] as Coord,
     rect: {
       x: 0,
       y: 0,
