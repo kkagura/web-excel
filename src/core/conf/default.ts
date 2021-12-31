@@ -1,4 +1,7 @@
 export const style = {
+  get dpr() {
+    return window.devicePixelRatio
+  },
   rowHeight: 50,
   colWidth: 50,
   borderWidth: 1,

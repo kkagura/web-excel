@@ -1,8 +1,9 @@
 import { getCanvas, getContainerBounding } from "../../App";
+import { style } from "../conf/default";
 import { CellData, getCellRect, getViewRect, state } from "../store";
 import { fillRect, fillText } from "../utils/draw";
 import { getRandomColor } from "../utils/utils";
-import { clearRect, trigger } from "./Renderer";
+import { clearRect, transform, trigger } from "./Renderer";
 
 const cellQueue: Set<{
   rowIdx: number;
@@ -21,7 +22,13 @@ export function resize() {
 
 export function render() {
   clearRect(ctx, getViewRect());
+  ctx.save();
+  transform(ctx);
+  const { x, y, width, height } = getViewRect();
+  ctx.rect(x + style.header.width, y + style.header.height, width, height);
+  ctx.clip();
   renderCells();
+  ctx.restore();
 }
 
 export function pushCell(cell: CellData, rowIdx: number, colIdx: number) {
@@ -39,6 +46,8 @@ function renderCells() {
     const { cell, colIdx, rowIdx } = conf;
     const rect = getCellRect([rowIdx, colIdx]);
     clearRect(ctx, rect);
+    // ctx.fillStyle = getRandomColor();
+    // fillRect(ctx, rect);
     const { value } = cell;
     fillText(ctx, value, {}, rect);
     ctx.restore();
@@ -47,4 +56,8 @@ function renderCells() {
 
 export function getCellCanvas() {
   return canvas;
+}
+
+export function emptyQueue() {
+  cellQueue.clear();
 }

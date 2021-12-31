@@ -3,7 +3,7 @@ import styles from "./App.module.less";
 import { config, init } from "./core";
 import Editor from "./components/Editor/Index";
 import { Rect } from "./core/utils/draw";
-import { getCell, getCellRect } from "./core/store";
+import { getCell, getCellRect, setViewRect } from "./core/store";
 import Toolbar from "./core/view/toolbar";
 import { onDbClick, onClick, onMousedown, onMouseup } from "./core/events";
 import "./core/operator";
@@ -61,6 +61,7 @@ function resize() {
   attr(getCellCanvas(), "width", width + "");
   attr(getCellCanvas(), "height", height + "");
   attr(getCellCanvas(), 'style', `width:${width}px;height:${height}px;`);
+  setViewRect({ width, height });
 }
 
 export default App;

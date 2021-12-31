@@ -1,6 +1,7 @@
 import { style } from "../conf/default";
 import {
   CellData,
+  dataInView,
   getCellRect,
   getCurrentSheet,
   getViewRect,
@@ -9,8 +10,18 @@ import {
 } from "../store";
 import { getRangerViewRect, Ranger } from "../store/ranger";
 import { fillRect, fillText, line, Rect, strokeRect } from "../utils/draw";
-import { render as renderCells, getCellCanvas } from "./Cell";
-import { getSheetCanvas, render as renderSheet } from "./Sheet";
+import {
+  render as renderCells,
+  getCellCanvas,
+  emptyQueue as emptyCellQueue,
+} from "./Cell";
+import {
+  getSheetCanvas,
+  render as renderSheet,
+  emptyQueue as emptySheetQueue,
+  pushRows,
+  pushCols,
+} from "./Sheet";
 
 const cbs: (() => undefined)[] = [];
 
@@ -22,7 +33,20 @@ let all = false;
 export function run(ctx: CanvasRenderingContext2D) {
   const { requestAnimationFrame } = window;
   const fn = () => {
+    if (!updateFlag) {
+      return;
+    }
+    if (all) {
+      empty();
+      const { rows, cols } = dataInView();
+      pushRows(rows);
+      pushCols(cols);
+    }
     render(ctx);
+    flushCallbacks();
+    cbs.length = 0;
+    updateFlag = false;
+    all = false;
     requestAnimationFrame(fn);
   };
   timer = requestAnimationFrame(fn);
@@ -33,21 +57,23 @@ export function stop() {
 }
 
 function render(ctx: CanvasRenderingContext2D) {
-  if (!updateFlag) {
-    return;
-  }
+  ctx.save();
+  transform(ctx);
   diffRect();
-  clear(ctx);
+  clean(ctx);
   renderCells();
   renderSheet();
   compose(ctx);
   renderSelector(ctx);
-  flushCallbacks();
-  cbs.length = 0;
-  updateFlag = false;
+  ctx.restore();
 }
 
-function clear(ctx: CanvasRenderingContext2D) {
+function empty() {
+  emptyCellQueue();
+  emptySheetQueue();
+}
+
+function clean(ctx: CanvasRenderingContext2D) {
   clearRect(ctx, rect);
   clearSelector();
 }
@@ -95,4 +121,9 @@ function flushCallbacks() {
   cbs.forEach((fn) => {
     fn();
   });
+}
+
+export function transform(ctx: CanvasRenderingContext2D) {
+  const { x, y } = getCurrentSheet().viewRect;
+  ctx.translate(-x, -y);
 }

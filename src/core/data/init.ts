@@ -1,3 +1,4 @@
+import { trigger } from "../render/Renderer";
 import { addCol, addRow } from "../store";
 
 export function initData() {
@@ -9,4 +10,5 @@ export function initData() {
   for (let i = 0; i < rowCount; i++) {
     addRow(i);
   }
+  trigger(true);
 }

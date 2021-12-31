@@ -85,8 +85,8 @@ export const state: State = {
       scale: 1,
       ranges: [],
       viewRect: {
-        x: 0,
-        y: 0,
+        x: 48,
+        y: 30,
         width: 500,
         height: 500,
       },
@@ -184,7 +184,7 @@ function createRow(i: number, top: number = 0): RowData {
   return {
     i,
     top,
-    height: 100,
+    height: style.rowHeight,
     fixed: false,
   };
 }
@@ -193,7 +193,7 @@ function createCol(i: number, left: number = 0): ColData {
   return {
     i,
     left,
-    width: 100,
+    width: style.colWidth,
     fixed: false,
   };
 }
@@ -277,4 +277,63 @@ export function setViewRect(rect: Partial<Rect>) {
 
 export function getViewRect() {
   return getCurrentSheet().viewRect;
+}
+
+export function dataInView() {
+  return {
+    rows: rowsInView(),
+    cols: colsInView(),
+  };
+}
+
+function colsInView() {
+  const { cols } = getCurrentSheet();
+  let start = 0,
+    end = cols.length - 1,
+    matched1 = false,
+    matched2 = false;
+  const { x, width } = getViewRect();
+  while ((!matched1 || !matched2) && start < end) {
+    if (!matched1) {
+      if (cols[start].left >= x) {
+        matched1 = true;
+      } else {
+        start++;
+      }
+    }
+    if (!matched2) {
+      if (cols[end].left + cols[end].width <= x + width) {
+        matched2 = true;
+      } else {
+        end--;
+      }
+    }
+  }
+  return cols.slice(0, end + 1);
+}
+
+function rowsInView() {
+  const { rows } = getCurrentSheet();
+  let start = 0,
+    end = rows.length - 1,
+    matched1 = false,
+    matched2 = false;
+  const { y, height } = getViewRect();
+  while ((!matched1 || !matched2) && start < end) {
+    if (!matched1) {
+      if (rows[start].top >= y) {
+        matched1 = true;
+      } else {
+        start++;
+      }
+    }
+    if (!matched2) {
+      if (rows[end].top + rows[end].height <= y + height) {
+        matched2 = true;
+      } else {
+        end--;
+      }
+    }
+  }
+  return rows.slice(0, end + 1);
 }
