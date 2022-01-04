@@ -13,7 +13,7 @@ addCellEventListener("dbClick", (e) => {
   setAppState("cellEditor", () => {
     return {
       show: true,
-      coord: { rowIdx, colIdx },
+      coord: [rowIdx, colIdx],
       rect,
       value: e.cell.value,
     };

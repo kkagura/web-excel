@@ -37,7 +37,7 @@ export function render() {
 function renderCol(col: ColData) {
   const rect = getViewRect();
   const y = rect.y;
-  let x = Math.max(col.left, rect.x + style.header.width);
+  let x = Math.max(col.left, rect.x);
   const headerRect = {
     x,
     y,
@@ -66,7 +66,7 @@ function renderRow(row: RowData) {
   const rect = getViewRect();
 
   const x = rect.x;
-  let y = Math.max(row.top, rect.y + style.header.height)
+  let y = Math.max(row.top, rect.y)
   //  绘制头部
   const headerRect = {
     x: rect.x,

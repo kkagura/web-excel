@@ -1,4 +1,5 @@
 import { getCanvas } from "../../App";
+import { style } from "../conf/default";
 import {
   CellData,
   ColData,
@@ -15,6 +16,8 @@ export type CMouseEvent = {
   col: ColData;
   cell: CellData;
 };
+
+export class CEvent extends MouseEvent {}
 
 type EventType = "click" | "mousedown" | "mouseup" | "dbClick";
 
@@ -128,9 +131,13 @@ function handleMouseEvent(type: EventType, e: MouseEvent) {
 export function getCellCoordAt(e: MouseEvent): Coord | null {
   const canvas = getCanvas();
   const { left, top } = canvas.getBoundingClientRect();
-  const offsetx = e.pageX - left;
-  const offsety = e.pageY - top;
   const sheet = getCurrentSheet();
+  const {
+    viewRect: { x, y },
+  } = sheet;
+  const { width, height } = style.header;
+  const offsetx = e.pageX - left - width + x;
+  const offsety = e.pageY - top - height + y;
   const rowData = binarySearch(sheet.rows, (row) => {
     if (row.top >= offsety) {
       return -1;
@@ -152,6 +159,7 @@ export function getCellCoordAt(e: MouseEvent): Coord | null {
     }
     return 0;
   });
+  console.log(offsetx, sheet.cols, colData);
   if (!colData) {
     return null;
   }

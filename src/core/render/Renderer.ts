@@ -124,6 +124,11 @@ function flushCallbacks() {
 }
 
 export function transform(ctx: CanvasRenderingContext2D) {
-  const { x, y } = getCurrentSheet().viewRect;
+  const s = getCurrentSheet();
+  const {
+    viewRect: { x, y },
+    scale
+  } = s;
+  ctx.scale(scale, scale);
   ctx.translate(-x, -y);
 }

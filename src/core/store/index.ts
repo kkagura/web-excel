@@ -85,8 +85,8 @@ export const state: State = {
       scale: 1,
       ranges: [],
       viewRect: {
-        x: 48,
-        y: 30,
+        x: 0,
+        y: 0,
         width: 500,
         height: 500,
       },
@@ -201,14 +201,14 @@ function createCol(i: number, left: number = 0): ColData {
 function accumHeight(rows: RowData[]) {
   const h = rows.reduce((total, row) => {
     return total + row.height;
-  }, style.header.height);
+  }, 0);
   return h;
 }
 
 function accumWidth(cols: ColData[]) {
   const w = cols.reduce((total, col) => {
     return total + col.width;
-  }, style.header.width);
+  }, 0);
   return w;
 }
 
