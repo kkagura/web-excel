@@ -1,5 +1,6 @@
 import { createStore } from "solid-js/store";
 import { Coord } from ".";
+import { Ranger } from "./ranger";
 
 const app = {
   cellEditor: {
@@ -13,6 +14,7 @@ const app = {
       height: 0,
     },
   },
+  selector: [] as Ranger[],
 };
 
 export const [appState, setAppState] = createStore(app);

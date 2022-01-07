@@ -37,17 +37,17 @@ export function render() {
 function renderCol(col: ColData) {
   const rect = getViewRect();
   const y = rect.y;
-  let x = Math.max(col.left, rect.x);
+  let x = Math.max(col.left, rect.x) + style.header.width;
   const headerRect = {
     x,
     y,
     width: col.width,
     height: style.header.height,
   };
-  // ctx.fillStyle = style.header.backgroundColor;
-  ctx.fillStyle = getRandomColor();
+  ctx.fillStyle = style.header.backgroundColor;
+  // ctx.fillStyle = getRandomColor();
   fillRect(ctx, headerRect);
-  headerRect.x = col.left;
+  headerRect.x = col.left + style.header.width;
   fillText(
     ctx,
     translateNumberToColIdx(col.i),
@@ -55,7 +55,7 @@ function renderCol(col: ColData) {
     headerRect
   );
   const endy = rect.y + rect.height;
-  x = col.left + col.width - 0.5;
+  x = col.left + col.width - 0.5 + style.header.width;
   line(ctx, [
     { x, y },
     { x, y: endy },
@@ -66,7 +66,7 @@ function renderRow(row: RowData) {
   const rect = getViewRect();
 
   const x = rect.x;
-  let y = Math.max(row.top, rect.y)
+  let y = Math.max(row.top, rect.y) + style.header.height;
   //  绘制头部
   const headerRect = {
     x: rect.x,
@@ -76,14 +76,14 @@ function renderRow(row: RowData) {
   };
   ctx.fillStyle = style.header.backgroundColor;
   fillRect(ctx, headerRect);
-  headerRect.y = row.top;
+  headerRect.y = row.top + style.header.height;
   fillText(
     ctx,
     row.i + 1 + "",
     { color: style.header.color, fontSize: style.header.fontSize },
     headerRect
   );
-  y = row.height + row.top - 0.5;
+  y = row.height + row.top - 0.5 + style.header.height;
   const endx = rect.x + rect.width;
   line(ctx, [
     { x, y },

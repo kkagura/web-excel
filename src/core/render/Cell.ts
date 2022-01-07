@@ -24,9 +24,10 @@ export function render() {
   clearRect(ctx, getViewRect());
   ctx.save();
   transform(ctx);
-  const { x, y, width, height } = getViewRect();
-  ctx.rect(x + style.header.width, y + style.header.height, width, height);
-  ctx.clip();
+  ctx.translate(style.header.width, style.header.height);
+  // const { x, y, width, height } = getViewRect();
+  // ctx.rect(x + style.header.width, y + style.header.height, width, height);
+  // ctx.clip();
   renderCells();
   ctx.restore();
 }

@@ -58,13 +58,14 @@ export function stop() {
 
 function render(ctx: CanvasRenderingContext2D) {
   ctx.save();
-  transform(ctx);
+  ctx.globalAlpha = 0.1;
+  // transform(ctx);
   diffRect();
   clean(ctx);
   renderCells();
   renderSheet();
   compose(ctx);
-  renderSelector(ctx);
+  // renderSelector(ctx);
   ctx.restore();
 }
 

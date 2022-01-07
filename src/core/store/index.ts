@@ -1,10 +1,11 @@
-import { getCanvas } from "../../App";
+import { getCanvas, getContainerBounding } from "../../App";
 import { style } from "../conf/default";
 import { pushCell } from "../render/Cell";
 import { trigger } from "../render/Renderer";
 import { pushCols, pushRows } from "../render/Sheet";
 import { Rect } from "../utils/draw";
 import { createCacheFn, toNumber, getCellValue } from "../utils/utils";
+import { setAppState } from "./app";
 import { isSameRanger, Ranger } from "./ranger";
 
 export const COL_START = "A".charCodeAt(0);
@@ -30,9 +31,8 @@ interface Border {
 export interface CellData {
   value: string;
   raw: any;
-  style?: {
-    border?: BorderStyle;
-  };
+  fill?: string;
+  border?: Array<Border | null>;
   hl?: "l" | "m" | "r"; //  水平对齐
   vl?: "t" | "m" | "b"; //  垂直对齐
 }
@@ -91,8 +91,8 @@ export const state: State = {
         height: 500,
       },
       bounding: {
-        x: style.header.width,
-        y: style.header.height,
+        x: 0,
+        y: 0,
         width: 0,
         height: 0,
       },
@@ -135,7 +135,7 @@ export function addRow(i: number, withCell: boolean = true) {
   row.top = accumHeight(sheet.rows.slice(0, i));
   sheet.bounding.height += row.height;
   if (withCell) {
-    const cells = new Array(sheet.colCount).fill(null).map(() => createCell(i));
+    const cells = new Array(sheet.colCount).fill(null).map(() => createCell(""));
     sheet.cells.splice(i, 0, cells);
   }
 
@@ -253,6 +253,7 @@ export function setSelector(selector: Ranger) {
     return;
   }
   sheet.selector = selector;
+  setAppState("selector", [selector]);
   trigger();
 }
 
@@ -336,4 +337,16 @@ function rowsInView() {
     }
   }
   return rows.slice(0, end + 1);
+}
+
+export function toLogicalRect(rect: Rect): Rect {
+  const { scale } = getCurrentSheet();
+  const { top, left } = getContainerBounding();
+  const { width, height } = style.header;
+  return {
+    x: rect.x + left + width * scale,
+    y: rect.y + top + height * scale,
+    width: rect.width * scale,
+    height: rect.height * scale,
+  };
 }

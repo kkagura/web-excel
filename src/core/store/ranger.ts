@@ -1,4 +1,4 @@
-import { Coord, getCellRect, isSameCoord } from ".";
+import { Coord, getCellRect, getCurrentSheet, isSameCoord } from ".";
 import { Rect } from "../utils/draw";
 
 export type Ranger = [Coord, Coord];
@@ -15,9 +15,14 @@ export function getRangerRect(ranger: Ranger) {
 export function getRangerViewRect(ranger: Ranger): Rect {
   const start = getCellRect(ranger[0]);
   const end = getCellRect(ranger[1]);
+  const s = getCurrentSheet();
+  const {
+    bounding: { x, y },
+    scale,
+  } = s;
   return {
-    x: start.x,
-    y: start.y,
+    x: Math.max(start.x, x),
+    y: Math.max(start.y, y),
     width: end.x - start.x + end.width,
     height: end.y - start.y + end.height,
   };

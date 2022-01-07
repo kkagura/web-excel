@@ -1,33 +1,38 @@
 import { getCanvas } from "../../App";
-import { addCellEventListener, getCellCoordAt } from "../events";
-import { getCellRect, setSelector } from "../store";
+import { addEventListener, getCellCoordAt } from "../events";
+import { getCell, getCellRect, setSelector } from "../store";
 import { setAppState } from "../store/app";
 import { Ranger } from "../store/ranger";
 
-addCellEventListener("dbClick", (e) => {
-  const {
-    row: { i: rowIdx },
-    col: { i: colIdx },
-  } = e;
-  const rect = getCellRect([rowIdx, colIdx]);
+addEventListener("dbClick", (e) => {
+  // const {
+  //   row: { i: rowIdx },
+  //   col: { i: colIdx },
+  // } = e;
+  const coord = e.getCellCoordAt();
+  if (!coord) {
+    return;
+  }
+  const rect = getCellRect(coord);
+  const cell = getCell(coord);
   setAppState("cellEditor", () => {
     return {
       show: true,
-      coord: [rowIdx, colIdx],
+      coord: coord,
       rect,
-      value: e.cell.value,
+      value: cell.value,
     };
   });
 });
 
-addCellEventListener("mousedown", (e) => {
-  const {
-    row: { i: rowIdx },
-    col: { i: colIdx },
-  } = e;
+addEventListener("mousedown", (e) => {
+  const coord = e.getCellCoordAt();
+  if (!coord) {
+    return;
+  }
   const selector: Ranger = [
-    [rowIdx, colIdx],
-    [rowIdx, colIdx],
+    [...coord],
+    [...coord],
   ];
   setSelector(selector);
   const canvas = getCanvas();

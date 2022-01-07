@@ -17,71 +17,104 @@ export type CMouseEvent = {
   cell: CellData;
 };
 
-export class CEvent extends MouseEvent {}
+export class CEvent {
+  constructor(public raw: MouseEvent) {}
+  getCellCoordAt() {
+    return getCellCoordAt(this.raw);
+  }
+}
 
 type EventType = "click" | "mousedown" | "mouseup" | "dbClick";
 
-type Hanlder = (e: CMouseEvent) => void;
+type Hanlder = (e: CEvent) => void;
 
 type BaseMap = Map<EventType, Hanlder[]>;
 
-const rowMap: BaseMap = new Map();
-const colMap: BaseMap = new Map();
-const cellMap: BaseMap = new Map();
+const eventMap: BaseMap = new Map();
 
-export function addRowEventListener(type: EventType, handler: Hanlder) {
-  addEventListener(type, handler, rowMap);
-}
+// const rowMap: BaseMap = new Map();
+// const colMap: BaseMap = new Map();
+// const cellMap: BaseMap = new Map();
 
-export function addColEventListener(type: EventType, handler: Hanlder) {
-  addEventListener(type, handler, colMap);
-}
+// export function addRowEventListener(type: EventType, handler: Hanlder) {
+//   addEventListener(type, handler, rowMap);
+// }
 
-export function addCellEventListener(type: EventType, handler: Hanlder) {
-  addEventListener(type, handler, cellMap);
-}
+// export function addColEventListener(type: EventType, handler: Hanlder) {
+//   addEventListener(type, handler, colMap);
+// }
 
-export function removeRowEventListener(type: EventType, handler?: Hanlder) {
-  removeEventListener(type, rowMap, handler);
-}
+// export function addCellEventListener(type: EventType, handler: Hanlder) {
+//   addEventListener(type, handler, cellMap);
+// }
 
-export function removeColEventListener(type: EventType, handler?: Hanlder) {
-  removeEventListener(type, colMap, handler);
-}
+// export function removeRowEventListener(type: EventType, handler?: Hanlder) {
+//   removeEventListener(type, rowMap, handler);
+// }
 
-export function removeCellEventListener(type: EventType, handler?: Hanlder) {
-  removeEventListener(type, cellMap, handler);
-}
+// export function removeColEventListener(type: EventType, handler?: Hanlder) {
+//   removeEventListener(type, colMap, handler);
+// }
 
-function addEventListener(type: EventType, handler: Hanlder, map: BaseMap) {
-  if (!map.has(type)) {
-    map.set(type, [handler]);
-    return;
+// export function removeCellEventListener(type: EventType, handler?: Hanlder) {
+//   removeEventListener(type, cellMap, handler);
+// }
+
+// function addEventListener(type: EventType, handler: Hanlder, map: BaseMap) {
+//   if (!map.has(type)) {
+//     map.set(type, [handler]);
+//     return;
+//   }
+//   map.get(type)?.push(handler);
+// }
+
+// function removeEventListener(
+//   type: EventType,
+//   map: BaseMap,
+//   handler: Hanlder | undefined
+// ) {
+//   if (!map.has(type)) {
+//     return;
+//   }
+//   if (!handler) {
+//     map.delete(type);
+//   }
+//   const listeners = map.get(type);
+//   if (!listeners) {
+//     return;
+//   }
+//   for (let i = 0; i < listeners.length; i++) {
+//     const listener = listeners[i];
+//     if (handler === listener) {
+//       listeners.splice(i, 1);
+//       break;
+//     }
+//   }
+// }
+
+export function addEventListener(type: EventType, handler: Hanlder) {
+  const handlers = eventMap.get(type);
+  if (handlers) {
+    handlers.push(handler);
+  } else {
+    eventMap.set(type, [handler]);
   }
-  map.get(type)?.push(handler);
 }
 
-function removeEventListener(
-  type: EventType,
-  map: BaseMap,
-  handler: Hanlder | undefined
-) {
-  if (!map.has(type)) {
-    return;
-  }
-  if (!handler) {
-    map.delete(type);
-  }
-  const listeners = map.get(type);
-  if (!listeners) {
-    return;
-  }
-  for (let i = 0; i < listeners.length; i++) {
-    const listener = listeners[i];
-    if (handler === listener) {
-      listeners.splice(i, 1);
-      break;
+export function removeEventListener(type: EventType, handler?: Hanlder) {
+  if (handler) {
+    const handlers = eventMap.get(type);
+    if (handlers) {
+      const i = handlers.indexOf(handler);
+      if (i > -1) {
+        handlers.splice(i, 1);
+        if (handlers.length <= 0) {
+          eventMap.delete(type);
+        }
+      }
     }
+  } else {
+    eventMap.delete(type);
   }
 }
 
@@ -102,30 +135,11 @@ export function onDbClick(e: MouseEvent) {
 }
 
 function handleMouseEvent(type: EventType, e: MouseEvent) {
-  const coord = getCellCoordAt(e);
-  if (!coord) {
-    return;
+  const handlers = eventMap.get(type);
+  if (handlers) {
+    const event = new CEvent(e);
+    handlers.forEach((cb) => cb(event));
   }
-  const sheet = getCurrentSheet();
-  const rowData = sheet.rows[coord[0]];
-  const colData = sheet.cols[coord[1]];
-  const cell = getCell(coord);
-  const event = {
-    cell,
-    row: rowData,
-    col: colData,
-    raw: e,
-    stop: false,
-  };
-  cellMap.get(type)?.forEach((listener) => {
-    listener(event);
-  });
-  rowMap.get(type)?.forEach((listener) => {
-    listener(event);
-  });
-  colMap.get(type)?.forEach((listener) => {
-    listener(event);
-  });
 }
 
 export function getCellCoordAt(e: MouseEvent): Coord | null {
@@ -159,7 +173,6 @@ export function getCellCoordAt(e: MouseEvent): Coord | null {
     }
     return 0;
   });
-  console.log(offsetx, sheet.cols, colData);
   if (!colData) {
     return null;
   }

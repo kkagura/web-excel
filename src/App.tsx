@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount } from "solid-js";
+import { Component, createSignal, onMount, For } from "solid-js";
 import styles from "./App.module.less";
 import { config, init } from "./core";
 import Editor from "./components/Editor/Index";
@@ -12,6 +12,7 @@ import { getSheetCanvas } from "./core/render/Sheet";
 import { getCellCanvas } from "./core/render/Cell";
 import { attr } from "./core/utils/dom";
 import ScrollBar from "./components/ScrollBar";
+import Selector from "./components/Selector";
 
 config({
   tools: [["backgroundColor"]],
@@ -49,12 +50,17 @@ const App: Component = () => {
         ></ScrollBar>
       </div>
       {appState.cellEditor.show ? <Editor /> : null}
+      {
+        <For each={appState.selector}>
+          {(ranger) => <Selector ranger={ranger}></Selector>}
+        </For>
+      }
     </div>
   );
 };
 
 export function getContainerBounding() {
-  return $container.getBoundingClientRect();
+  return ($container as HTMLElement).getBoundingClientRect();
 }
 
 function resize() {
