@@ -82,7 +82,7 @@ export const state: State = {
       rows: [],
       rowCount: 0,
       colCount: 0,
-      scale: 1,
+      scale: 2,
       ranges: [],
       viewRect: {
         x: 0,
@@ -344,8 +344,8 @@ export function toLogicalRect(rect: Rect): Rect {
   const { top, left } = getContainerBounding();
   const { width, height } = style.header;
   return {
-    x: rect.x + left + width * scale,
-    y: rect.y + top + height * scale,
+    x: (rect.x + width) * scale + left,
+    y: (rect.y + height) * scale + top,
     width: rect.width * scale,
     height: rect.height * scale,
   };

@@ -148,15 +148,17 @@ export function getCellCoordAt(e: MouseEvent): Coord | null {
   const sheet = getCurrentSheet();
   const {
     viewRect: { x, y },
+    scale,
   } = sheet;
   const { width, height } = style.header;
-  const offsetx = e.pageX - left - width + x;
-  const offsety = e.pageY - top - height + y;
+  const offsetx = e.pageX - left - width * scale + x;
+  const offsety = e.pageY - top - height * scale + y;
   const rowData = binarySearch(sheet.rows, (row) => {
-    if (row.top >= offsety) {
+    const { top, height } = row;
+    if (top * scale >= offsety) {
       return -1;
     }
-    if (row.top + row.height < offsety) {
+    if ((top + height) * scale < offsety) {
       return 1;
     }
     return 0;
@@ -165,10 +167,11 @@ export function getCellCoordAt(e: MouseEvent): Coord | null {
     return null;
   }
   const colData = binarySearch(sheet.cols, (col) => {
-    if (col.left >= offsetx) {
+    const { left, width } = col;
+    if (left * scale >= offsetx) {
       return -1;
     }
-    if (col.left + col.width < offsetx) {
+    if ((left + width) * scale < offsetx) {
       return 1;
     }
     return 0;
@@ -176,5 +179,6 @@ export function getCellCoordAt(e: MouseEvent): Coord | null {
   if (!colData) {
     return null;
   }
+  console.log(rowData.i, colData.i);
   return [rowData.i, colData.i];
 }
