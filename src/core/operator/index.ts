@@ -36,6 +36,7 @@ addEventListener("mousedown", (e) => {
   ];
   setSelector(selector);
   const canvas = getCanvas();
+  console.log(canvas);
   const movemove = (e: MouseEvent) => {
     const coord = getCellCoordAt(e);
     if (coord) {
@@ -43,6 +44,7 @@ addEventListener("mousedown", (e) => {
     }
   };
   const mouveup = () => {
+    console.log('up')
     canvas.removeEventListener("mousemove", movemove);
     canvas.removeEventListener("mouseup", mouveup);
     canvas.removeEventListener("mouseleave", mouveup);

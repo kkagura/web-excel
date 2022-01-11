@@ -24,7 +24,13 @@ export class CEvent {
   }
 }
 
-type EventType = "click" | "mousedown" | "mouseup" | "dbClick";
+type EventType =
+  | "click"
+  | "mousedown"
+  | "mouseup"
+  | "dbClick"
+  | "mousemove"
+  | "mouseleave";
 
 type Hanlder = (e: CEvent) => void;
 

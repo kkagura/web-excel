@@ -253,6 +253,7 @@ export function setSelector(selector: Ranger) {
     return;
   }
   sheet.selector = selector;
+  
   setAppState("selector", [selector]);
   trigger();
 }
